@@ -35,8 +35,4 @@ export class Hero implements OnInit {
     dialogRef.afterClosed().subscribe(result => {
     });
   }
-
-
-
-  protected readonly open = open;
 }

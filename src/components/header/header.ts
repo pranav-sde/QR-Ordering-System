@@ -1,5 +1,5 @@
-import {Component, inject, signal, WritableSignal} from '@angular/core';
-import {Router, RouterLink} from '@angular/router';
+import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
+import {RouterLink} from '@angular/router';
 
 import {UicartService} from '../../shared/services/uicart/uicart.service';
 
@@ -7,9 +7,8 @@ import {UicartService} from '../../shared/services/uicart/uicart.service';
   selector: 'app-header',
   imports: [RouterLink],
   templateUrl: './header.html',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class Header {
-  public router = inject(Router);
   public ui = inject(UicartService);
-
 }

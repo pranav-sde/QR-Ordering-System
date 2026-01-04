@@ -1,10 +1,9 @@
 import {Component, inject, signal, WritableSignal} from '@angular/core';
 import {NavigationEnd, Router, RouterOutlet} from '@angular/router';
-import {Header} from '../components/header/header';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, Header],
+  imports: [RouterOutlet],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css',
 })

@@ -14,13 +14,14 @@ export class FoodItemService {
   }
 
   getFoodItems() {
-    return this.http.get<apiFormat>('https://dummyjson.com/recipes')
-      .pipe(
-        map((items) => {
-          return items.recipes.map((item:foodInterface) => {
-              return {...item, quantity : 1, price: Math.floor(Math.random() * (1500 - 400 + 1)) + 400}
+      return this.http.get<apiFormat>('https://dummyjson.com/recipes')
+        .pipe(
+          map((items) => {
+            return items.recipes.map((item: foodInterface) => {
+              return {...item, quantity: 1, price: Math.floor(Math.random() * (1500 - 400 + 1)) + 400}
+            })
           })
-        })
-      )
+        )
+
   }
 }

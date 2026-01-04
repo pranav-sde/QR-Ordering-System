@@ -3,14 +3,13 @@ import {Store} from '@ngrx/store';
 import {AppState} from '../../state/app.state';
 import {selectCartState} from '../../state/cart/cart.selector';
 import {AsyncPipe} from '@angular/common';
-import {MenuFooter} from '../menu-footer/menu-footer';
 import {foodInterface} from '../../model/food.interface';
 import {removeItem} from '../../state/cart/cart.actions';
 
 @Component({
   selector: 'app-cart',
   standalone: true,
-  imports: [MenuFooter, AsyncPipe],
+  imports: [AsyncPipe],
   templateUrl: './cart.html',
 })
 export class Cart {
@@ -25,6 +24,4 @@ export class Cart {
       console.error('Product ID is undefined');
     }
   }
-
-
 }
