@@ -1,9 +1,11 @@
 <div
+  animate.enter="fade-in"
   class="border-none max-w-sm  bg-white rounded-lg overflow-hidden transition-all duration-300 hover:translate-y-[-4px]">
   <div class="relative h-48 overflow-hidden p-3">
     <div class="absolute inset-0 bg-linear-to-t from-black/5 to-transparent z-10"></div>
 
     <img
+      animate.enter="fade-in-image"
       [src]="foodItem.image"
       alt="{{foodItem.name}}"
       class="w-full h-full object-cover transition-transform duration-500 hover:scale-105 rounded-lg"
@@ -23,7 +25,7 @@
     </div>
 
     <div class="flex md:flex-row flex-col items-center justify-between mt-1 gap-1">
-      <p class="text-md text-red-500 pl-3 w-full">₹ {{foodItem.price}}</p>
+      <p class="text-md text-red-500 pl-3 w-full">₹ {{ foodItem.price }}</p>
       <div class="w-full">
         <button
           (click)="addToCart(foodItem)"
