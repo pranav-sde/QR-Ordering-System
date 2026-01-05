@@ -47,10 +47,8 @@ export class MenuPage implements OnInit, OnDestroy {
   ngOnInit() {
     this.foodApi.getFoodItems().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (data) => {
-        setTimeout(() => {
         this.foodItem.set(data);
         this.isLoading.set(false);
-        }, 2000)
       },
       error: (err) => {
         console.error('Error fetching food items:', err);
