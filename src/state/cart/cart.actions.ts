@@ -1,14 +1,14 @@
-import {createAction, props} from '@ngrx/store';
-import {foodInterface} from '../../model/food.interface';
+import { createAction, props } from '@ngrx/store';
+import { foodInterface } from '../../model/food.interface';
 
 export const addToCart =
   createAction('[Cart Component] AddToCart', props<{ product: foodInterface }>())
 
 export const incrementProduct =
-  createAction('[Cart Component] IncrementProduct', props<{ productId: number }>())
+  createAction('[Cart Component] IncrementProduct', props<{ productId: string }>())
 
 export const decrementProduct =
-  createAction('[Cart Component] DecrementProduct', props<{ productId: number }>())
+  createAction('[Cart Component] DecrementProduct', props<{ productId: string }>())
 
 export const removeItem =
-  createAction('[Cart Component] RemoveItem', props<{ productId: number }>())
+  createAction('[Cart Component] RemoveItem', props<{ productId: string }>())

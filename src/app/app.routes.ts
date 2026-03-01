@@ -1,17 +1,8 @@
-import {Routes} from '@angular/router';
+import { Routes } from '@angular/router';
 
 export const routes: Routes = [
   {
     path: '',
-    pathMatch: 'full',
-    loadComponent: () => import('../components/signup/signup').then(m => m.Signup)
-  }, {
-  path: 'login',
-    pathMatch: 'full',
-    loadComponent: () => import('../components/login/login').then(m => m.Login)
-  },
-  {
-    path: 'home',
     loadComponent: () => import('../layout/app-shell/app-shell.component').then(m => m.AppShellComponent),
     children: [
       {
@@ -25,6 +16,10 @@ export const routes: Routes = [
         loadComponent: async () => import('../components/cart/cart').then(m => m.Cart)
       }
     ]
+  },
+  {
+    path: 'qr',
+    loadComponent: () => import('../components/order-init/order-init').then(m => m.OrderInitComponent)
   },
   {
     path: '**',

@@ -1,44 +1,66 @@
-<section class="flex flex-row items-center justify-center w-full md:mt-[150px] mt-[30px]">
-  <div class=" container-full container-mobile flex flex-row justify-between items-center">
-    <div class="border border-gray-200 rounded-full flex items-center justify-between p-1 md:w-[30%] w-[70%]">
-      <input type="email"
-             (input)="searchMenu($event)"
-             placeholder="Search for menu"
-             class="text-xs pl-3 placeholder:text-xm placeholder:p-2 focus:outline-hidden rounded-full p-[1.5px] w-full md:w-auto">
-      <button class="bg-[#090A0F] text-xs text-white/90 px-3 py-2 cursor-pointer rounded-2xl m-1">Search</button>
+<!-- High-End Background Effects -->
+<div class="bg-blob blob-1"></div>
+<div class="bg-blob blob-2"></div>
+
+<div class="max-w-6xl mx-auto px-6 relative z-10">
+  <!-- Header Section -->
+  <header class="md:mt-[100px] mt-[40px] mb-12">
+    <div class="flex flex-col gap-3 items-center md:items-start text-center md:text-left mb-8">
+      <h1 class="giest-medium text-5xl md:text-7xl title-gradient tracking-tighter leading-[1.1]">
+        Crafting <br class="md:hidden"> <span class="text-yellow-500">Delight</span>
+      </h1>
+      <p class="text-gray-400 text-sm md:text-base font-medium max-w-md">
+        Explore a curated collection of culinary masterpieces.
+      </p>
     </div>
 
-    <div>
-      <p class="text-sm text-gray-500 cursor-pointer">Sort by :</p>
-    </div>
-  </div>
-</section>
+    <!-- Search & Recommendation Row -->
+    <div class="flex flex-col md:flex-row justify-between items-center gap-6">
+      <div class="glass-searchContainer flex items-center justify-between p-1.5 w-full md:w-[45%]">
+        <input type="text" (input)="searchMenu($event)" placeholder="Search for something delicious..."
+          class="text-sm pl-4 placeholder:text-gray-400 focus:outline-hidden w-full bg-transparent border-none">
+        <button
+          class="bg-[#090A0F] text-xs font-medium text-white px-6 py-2.5 cursor-pointer rounded-full hover:bg-gray-800 transition-all active:scale-95">
+          Search
+        </button>
+      </div>
 
-<section class="w-full md:mt-[50px] mt-[50px] overflow-hidden">
-  @defer (when !isLoading()) {
-    <div class="flex justify-center">
-      <div class="grid grid-cols-2 gap-4 md:grid-cols-4 container-full container-mobile w-full">
-        @for (item of filteredFoodItems(); track item.id) {
-          <app-food-item
-            [foodItem]="item"
-            (handleAdd)="addItemToCart($event)"
-          >
-          </app-food-item>
-        }
+      <div class="hidden md:block">
+        <div class="glass-container flex items-center gap-2 px-4 py-2.5 rounded-full border border-white/60">
+          <span class="text-[10px] animate-pulse">✨</span>
+          <p class="text-[9px] uppercase tracking-[0.2em] text-gray-600 font-bold">Chef's Choice Recommendation</p>
+        </div>
       </div>
     </div>
-  } @placeholder {
-    <div class="flex justify-center w-full" animate.leave="fadeout-skeleton">
-      <div class="grid grid-cols-2 gap-4 md:grid-cols-4 container-full container-mobile w-full">
-        @for (_ of [1, 2, 3, 4, 5, 6, 7, 8]; track _) {
-          <div class="skeleton">
-            <div class="food-image"></div>
-            <div class="text title"></div>
-            <div class="text subtitle"></div>
-          </div>
-        }
-      </div>
-    </div>
-  }
-</section>
+  </header>
 
+  <!-- Category Section -->
+  <section class="w-full mb-12 overflow-x-auto whitespace-nowrap scrollbar-hide py-2">
+    <div class="flex gap-3">
+      @for (category of categories(); track category.categoryId) {
+      <button (click)="selectCategory(category.categoryId)"
+        [ngClass]="selectedCategoryId() === category.categoryId ? 'category-active' : 'category-pill'"
+        class="px-6 py-2.5 rounded-full text-sm font-semibold transition-all duration-300 cursor-pointer">
+        {{ category.name }}
+      </button>
+      }
+    </div>
+  </section>
+
+  <!-- Items Grid Section -->
+  <section class="pb-24">
+    @defer (when !isLoading()) {
+    <div class="grid grid-cols-2 lg:grid-cols-4 md:grid-cols-3 gap-6">
+      @for (item of filteredFoodItems(); track item.id) {
+      <app-food-item [foodItem]="item" (handleAdd)="addItemToCart($event)"></app-food-item>
+      }
+    </div>
+    } @placeholder {
+    <div class="grid grid-cols-2 lg:grid-cols-4 md:grid-cols-3 gap-6">
+      @for (_ of [1, 2, 3, 4, 5, 6, 7, 8]; track _) {
+      <div class="skeleton h-64"></div>
+      }
+    </div>
+    }
+  </section>
+</div>

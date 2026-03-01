@@ -1,71 +1,83 @@
-.skeleton {
-  text-align: center;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 6px;
+:host {
+  display: block;
+  min-height: 100vh;
+  /* Darker, more vibrant mesh background to make glass pop */
+  background:
+    radial-gradient(at 0% 0%, rgba(251, 191, 36, 0.12) 0, transparent 40%),
+    radial-gradient(at 100% 0%, rgba(236, 72, 153, 0.08) 0, transparent 40%),
+    radial-gradient(at 50% 100%, rgba(59, 130, 246, 0.08) 0, transparent 40%),
+    #fafafa;
+  position: relative;
+  overflow-x: hidden;
+}
 
+.bg-blob {
+  position: absolute;
+  width: 500px;
+  height: 500px;
+  filter: blur(100px);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 0;
+}
 
-  .food-image {
-    background: linear-gradient(
-      90deg,
-      #eee 25%,
-      #fff 50%,
-      #eee 75%
-    );
-    width: 80%;
-    height: 200px;
-    background-size: 400% 100%;
-    animation: shimmer 2s infinite linear;
+.blob-1 {
+  background: rgba(251, 191, 36, 0.2);
+  top: -10%;
+  left: -10%;
+  animation: float 15s infinite alternate;
+}
+
+.blob-2 {
+  background: rgba(147, 51, 234, 0.15);
+  top: 20%;
+  right: -10%;
+  animation: float 20s infinite alternate-reverse;
+}
+
+@keyframes float {
+  from {
+    transform: translate(0, 0) scale(1);
   }
 
-  .text {
-    background: linear-gradient(
-      90deg,
-      #eee 25%,
-      #fff 50%,
-      #eee 75%
-    );
-    margin-inline: auto;
-    background-size: 400% 100%;
-    animation: shimmer 2s infinite linear;
-  }
-
-  .title {
-    border-radius: 8px;
-    width: 70%;
-    height: 20px;
-    margin-block: 9px 3px;
-  }
-
-  .subtitle {
-    height: 15px;
-    border-radius: 6px;
-    width: 50%;
+  to {
+    transform: translate(60px, 40px) scale(1.1);
   }
 }
 
-@keyframes shimmer {
-  0% {
-    background-position: -200% 0;
-  }
-  100% {
-    background-position: 200% 0;
-  }
+/* Thinner, More Transparent Glass */
+.glass-container {
+  backdrop-filter: blur(20px) saturate(160%);
+  -webkit-backdrop-filter: blur(20px) saturate(160%);
+  background-color: rgba(255, 255, 255, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.04);
 }
 
-
-fadeout-skeleton {
-  animation: fadeOut 200ms ease-out forwards ;
+.glass-searchContainer {
+  @extend .glass-container;
+  border-radius: 20px;
 }
 
-@keyframes fadeOut  {
-  0% {
-    opacity: 1;
-    filter: blur(10px);
-  }
-  100% {
-    opacity: 0;
-    filter: blur(0px);
-  }
+.category-pill {
+  backdrop-filter: blur(10px);
+  background-color: rgba(255, 255, 255, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  color: #6b7280;
+  padding: 10px 24px;
+  border-radius: 16px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.category-active {
+  background: #090A0F !important;
+  color: #fff !important;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.2);
+}
+
+.title-gradient {
+  background: linear-gradient(135deg, #111 0%, #444 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }

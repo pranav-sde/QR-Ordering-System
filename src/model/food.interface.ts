@@ -1,11 +1,15 @@
 export interface foodInterface {
-  id?: number,
-  name: string,
-  image: string,
-  mealType: string,
-  cuisine: string,
-  rating?: number,
-  quantity:number,
-  reviewCount?: number,
-  price: number
+  id: string;
+  name: string;
+  image: string;
+  description?: string;
+  veg: boolean;
+  quantity: number;
+  price: number;
+  variants?: any[];
+  addons?: any[];
+  mealType?: string;
+  cuisine?: string;
+  rating?: number;
+  reviewCount?: number;
 }

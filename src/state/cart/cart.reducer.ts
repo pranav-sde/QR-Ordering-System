@@ -1,5 +1,5 @@
-import {createReducer, on} from '@ngrx/store';
-import {foodInterface} from '../../model/food.interface';
+import { createReducer, on } from '@ngrx/store';
+import { foodInterface } from '../../model/food.interface';
 import * as CartActions from './cart.actions'
 
 export interface CartState {
@@ -13,14 +13,14 @@ export const initialCounterState: CartState = {
 
 export const CartReducer = createReducer(
   initialCounterState,
-  on(CartActions.addToCart, (state, {product}) => {
+  on(CartActions.addToCart, (state, { product }) => {
     const updateState = [...state.products, product]
     return {
       ...state,
       products: updateState
     }
   }),
-  on(CartActions.removeItem, (state, {productId}) => {
+  on(CartActions.removeItem, (state, { productId }) => {
     const updatedState = state.products.filter((item) =>
       item.id !== productId
     )
@@ -29,18 +29,18 @@ export const CartReducer = createReducer(
       products: updatedState
     }
   }),
-  on(CartActions.incrementProduct, (state, {productId}) => {
+  on(CartActions.incrementProduct, (state, { productId }) => {
     const updatedState = state.products.map((item) =>
-      item.id === productId ? {...item, quantity: item.quantity++} : item
+      item.id === productId ? { ...item, quantity: item.quantity + 1 } : item
     )
     return {
       ...state,
       products: updatedState
     }
   }),
-  on(CartActions.decrementProduct, (state, {productId}) => {
+  on(CartActions.decrementProduct, (state, { productId }) => {
     const updatedState = state.products.map((item) =>
-      item.id === productId ? {...item, quantity: item.quantity--} : item
+      item.id === productId ? { ...item, quantity: item.quantity > 1 ? item.quantity - 1 : 1 } : item
     );
     return {
       ...state,
