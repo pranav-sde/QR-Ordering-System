@@ -20,6 +20,13 @@ import { addToCart } from '../../state/cart/cart.actions';
 import { Router } from '@angular/router';
 import { UicartService } from '../../shared/services/uicart/uicart.service';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { first } from 'rxjs';
+import { CartService } from '../../services/cart/cart.service';
+
+import { CustomerService } from '../../services/customer/customer.service';
+import * as CartActions from '../../state/cart/cart.actions';
+import { selectCartQuantityMap, selectCart } from '../../state/cart/cart.selector';
+import { AddToCartRequest, UpdateCartItemRequest } from '../../model/cart.model';
 
 
 @Component({
@@ -58,11 +65,27 @@ export class MenuPage implements OnInit, OnDestroy {
       this.loadFoodItems(catId);
     }, { allowSignalWrites: true });
   }
+ 
+  public cartQuantityMap$ = this.store.select(selectCartQuantityMap);
 
   ngOnInit() {
     this.uiCart.setShowCart(true);
     this.loadCategories();
+    this.loadCart();
   }
+
+  loadCart() {
+    const sessionId = this.customerService.getSessionToken();
+    if (sessionId) {
+      this.cartService.getCart(parseInt(this.restaurantId), sessionId).subscribe({
+        next: (cart) => {
+          this.store.dispatch(CartActions.loadCartSuccess({ cart }));
+        },
+        error: (err) => console.error('Error loading cart:', err)
+      });
+    }
+  }
+
 
   loadCategories() {
     this.foodApi.getCategories(this.restaurantId).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
@@ -107,8 +130,65 @@ export class MenuPage implements OnInit, OnDestroy {
     this.searchTerm.set(event.target.value.toLowerCase());
   }
 
+  private cartService = inject(CartService);
+  private customerService = inject(CustomerService);
+
   addItemToCart(product: foodInterface) {
-    this.store.dispatch(addToCart({ product }));
+    const sessionId = this.customerService.getSessionToken();
+    console.log('Attempting to add to cart. SessionId:', sessionId, 'Product:', product.name);
+
+    if (!sessionId) {
+      alert('Your session has expired or you haven\'t scanned a QR code. Please scan the QR code again.');
+      console.error('No session token found. Please scan QR code again.');
+      return;
+    }
+
+    const request: AddToCartRequest = {
+      sessionId: sessionId,
+      restaurantId: parseInt(this.restaurantId),
+      menuItemId: product.id,
+      quantity: 1,
+      addonIds: [],
+      variantId: undefined
+    };
+
+    this.cartService.addItem(request).subscribe({
+      next: (cart) => {
+        console.log('Item added successfully. Updated cart:', cart);
+        this.store.dispatch(CartActions.loadCartSuccess({ cart }));
+      },
+      error: (err) => {
+        console.error('Error adding item to cart:', err);
+        alert('Could not add item to cart. Check if the Cart Service is running on port 8086.');
+      }
+    });
+  }
+
+  removeFromCart(product: foodInterface) {
+    const sessionId = this.customerService.getSessionToken();
+    if (!sessionId) return;
+
+    // We need to find the cart item that matches this menu item
+    this.store.select(selectCart).pipe(first()).subscribe(cart => {
+      if (!cart) return;
+
+      const item = cart.items.find(i => i.menuItemId === product.id);
+      if (item) {
+        if (item.quantity > 1) {
+          this.cartService.updateItemQuantity(item.cartItemId, {
+            restaurantId: parseInt(this.restaurantId),
+            sessionId: sessionId,
+            quantity: item.quantity - 1
+          }).subscribe(updatedCart => {
+            this.store.dispatch(CartActions.loadCartSuccess({ cart: updatedCart }));
+          });
+        } else {
+          this.cartService.removeItem(item.cartItemId, parseInt(this.restaurantId), sessionId).subscribe(updatedCart => {
+            this.store.dispatch(CartActions.loadCartSuccess({ cart: updatedCart }));
+          });
+        }
+      }
+    });
   }
 
   ngOnDestroy() {

@@ -22,7 +22,7 @@ export class FoodItemService {
   }
 
   getFoodItems(restaurantId?: string, categoryId?: string | number) {
-    let url = `${this.menuApiUrl}/items`;
+    const url = categoryId != null ? `${this.menuApiUrl}/items-by-category` : `${this.menuApiUrl}/items`;
     const params: any = {};
     if (restaurantId) params.restaurantId = restaurantId;
     if (categoryId) params.categoryId = categoryId;

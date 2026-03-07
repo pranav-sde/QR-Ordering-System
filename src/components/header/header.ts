@@ -1,14 +1,21 @@
-import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
-import {RouterLink} from '@angular/router';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { RouterLink } from '@angular/router';
+import { Store } from '@ngrx/store';
+import { AppState } from '../../state/app.state';
+import { selectCartItemsCount } from '../../state/cart/cart.selector';
+import { AsyncPipe } from '@angular/common';
 
-import {UicartService} from '../../shared/services/uicart/uicart.service';
+import { UicartService } from '../../shared/services/uicart/uicart.service';
 
 @Component({
   selector: 'app-header',
-  imports: [RouterLink],
+  imports: [RouterLink, AsyncPipe],
   templateUrl: './header.html',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class Header {
   public ui = inject(UicartService);
+  private store = inject<Store<AppState>>(Store);
+  public cartCount$ = this.store.select(selectCartItemsCount);
 }
+

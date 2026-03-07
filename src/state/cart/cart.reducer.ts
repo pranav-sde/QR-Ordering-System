@@ -1,18 +1,40 @@
 import { createReducer, on } from '@ngrx/store';
 import { foodInterface } from '../../model/food.interface';
+import { Cart } from '../../model/cart.model';
 import * as CartActions from './cart.actions'
 
 export interface CartState {
-  products: foodInterface[],
-  totalPrice?: number
+  products: foodInterface[];
+  cart: Cart | null;
+  totalPrice?: number;
+  loading: boolean;
+  error: any;
 }
 
 export const initialCounterState: CartState = {
-  products: []
+  products: [],
+  cart: null,
+  loading: false,
+  error: null
 }
 
 export const CartReducer = createReducer(
   initialCounterState,
+  on(CartActions.loadCart, (state) => ({
+    ...state,
+    loading: true
+  })),
+  on(CartActions.loadCartSuccess, (state, { cart }) => ({
+    ...state,
+    cart,
+    loading: false,
+    error: null
+  })),
+  on(CartActions.loadCartFailure, (state, { error }) => ({
+    ...state,
+    loading: false,
+    error
+  })),
   on(CartActions.addToCart, (state, { product }) => {
     const updateState = [...state.products, product]
     return {
@@ -48,3 +70,4 @@ export const CartReducer = createReducer(
     }
   })
 )
+

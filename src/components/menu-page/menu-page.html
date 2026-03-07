@@ -52,8 +52,11 @@
     @defer (when !isLoading()) {
     <div class="grid grid-cols-2 lg:grid-cols-4 md:grid-cols-3 gap-6">
       @for (item of filteredFoodItems(); track item.id) {
-      <app-food-item [foodItem]="item" (handleAdd)="addItemToCart($event)"></app-food-item>
+      <app-food-item [foodItem]="item" [quantity]="(cartQuantityMap$ | async)?.[item.id] || 0"
+        (handleAdd)="addItemToCart($event)" (handleRemove)="removeFromCart($event)">
+      </app-food-item>
       }
+
     </div>
     } @placeholder {
     <div class="grid grid-cols-2 lg:grid-cols-4 md:grid-cols-3 gap-6">

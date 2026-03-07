@@ -1,54 +1,81 @@
-@if (!(foodItem$ | async)?.length) {
-  <section class="flex flex-col justify-center items-center gap-4 w-full h-screen md:mt-[100px] mt-[50px] overflow-hidden ">
-    <div class="flex flex-col container-full container-mobile justify-center items-center">
-      <p class="text-3xl text-gray-600">Cart is empty :(</p>
-    </div>
-  </section>
+@if (!(cart$ | async)?.items?.length) {
+<section
+  class="flex flex-col justify-center items-center gap-4 w-full h-screen md:mt-[100px] mt-[50px] overflow-hidden ">
+  <div class="flex flex-col container-full container-mobile justify-center items-center">
+    <p class="text-3xl text-gray-600">Cart is empty :(</p>
+  </div>
+</section>
 } @else {
-  <section class="flex flex-col justify-center items-center gap-4 w-full md:mt-[100px] mt-[50px] overflow-hidden ">
-    <div class="flex flex-row w-full items-center justify-start container-full container-mobile md:pl-36">
-      <p class="max-w-fit p-2 w-full text-lg text-gray-900">Cart</p>
-      <p class="max-w-fit p-2 w-full text-end text-md text-gray-900">{{ (foodItem$ | async)?.length }} items</p>
+<section class="flex flex-col justify-center items-center gap-4 w-full md:mt-[100px] mt-[50px] overflow-hidden ">
+  <div class="flex flex-row w-full items-center justify-start container-full container-mobile md:pl-36">
+    <div class="flex flex-col">
+      <p class="max-w-fit p-2 w-full text-lg text-gray-900 font-bold">Your Cart</p>
+      <p class="max-w-fit p-2 w-full text-md text-gray-600">{{ (cart$ | async)?.items?.length }} items</p>
     </div>
+  </div>
+  <div
+    class="flex flex-col md:flex-row md:items-center md:justify-center flex-wrap container-full container-mobile gap-4">
+    @for (item of (cart$ | async)?.items; track item.cartItemId) {
     <div
-      class="flex flex-col md:flex-row md:items-center md:justify-center flex-wrap container-full container-mobile gap-4">
-      @for (item of foodItem$ | async; track item.id) {
-        <div
-          class="border-none max-w-sm  bg-white rounded-lg overflow-hidden transition-all duration-300 hover:translate-y-[-4px]">
-          <div class="relative h-48 overflow-hidden p-3">
-            <div class="absolute inset-0 bg-linear-to-t from-black/5 to-transparent z-10"></div>
-            <img
-              [src]="item.image"
-              alt="{{item.name}}"
-              class="w-full h-full object-cover transition-transform duration-500 hover:scale-105 rounded-lg"
-              style="image-rendering: smooth; transform: translateZ(0);"
-            >
+      class="border border-gray-100 max-w-sm w-full md:w-80 bg-white rounded-2xl overflow-hidden transition-all duration-300 hover:shadow-xl">
+      <div class="p-6 flex flex-col gap-4">
+        <div class="flex justify-between items-start">
+          <div>
+            <h3 class="text-xl font-bold text-gray-800">{{ item.name }}</h3>
+            @if (item.variant) {
+            <p class="text-xs text-gray-500 mt-1">{{ item.variant.variantName }}</p>
+            }
           </div>
-          <div class="p-5 flex flex-col gap-2">
-            <div class="flex justify-between items-celnter mb-3">
-              <h3 class="text-lg font-semibold text-gray-800 truncate">{{ item.name }}</h3>
-            </div>
-
-            <div class="flex flex-col md:flex-row justify-between px-1 gap-2">
-              <p class="text-gray-600 text-sm line-clamp-3 pl-1">{{ item.cuisine }}</p>
-              <p class="text-gray-600 text-sm">⭐ {{ item.rating }}</p>
-            </div>
-
-            <div class="flex flex-col gap-4">
-              <button
-                class="flex items-center justify-center gap-2 text-sm w-full text-white bg-yellow-500 p-2 rounded-lg hover:bg-yellow-400">
-                Checkout
-              </button>
-              <button
-                (click)="removeItem(item)"
-                class="flex items-center justify-center gap-2 text-sm w-full text-white bg-yellow-500 p-2 rounded-lg hover:bg-yellow-400">
-                Remove
-              </button>
-            </div>
-          </div>
+          <p class="text-lg font-bold text-yellow-600">₹{{ item.totalPrice }}</p>
         </div>
-      }
-    </div>
-  </section>
-}
 
+        <div class="flex items-center justify-between">
+          <div class="flex items-center bg-gray-50 rounded-xl p-1 border border-gray-100">
+            <button (click)="updateQuantity(item, -1)"
+              class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-white hover:shadow-sm text-gray-600 transition-all">
+              <i class="fa-solid fa-minus text-[10px]"></i>
+            </button>
+            <span class="w-10 text-center text-sm font-bold text-gray-800">{{ item.quantity }}</span>
+            <button (click)="updateQuantity(item, 1)"
+              class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-white hover:shadow-sm text-gray-600 transition-all">
+              <i class="fa-solid fa-plus text-[10px]"></i>
+            </button>
+          </div>
+          <span class="text-xs text-gray-400">× ₹{{ item.unitPrice }}</span>
+        </div>
+
+
+        @if (item.addons && item.addons.length > 0) {
+        <div class="flex flex-wrap gap-1">
+          @for (addon of item.addons; track addon.addonId) {
+          <span class="px-2 py-1 bg-gray-50 text-[10px] rounded-full text-gray-500 border border-gray-100">{{
+            addon.addonName }}</span>
+          }
+        </div>
+        }
+
+        <div class="flex gap-2 pt-2">
+          <button (click)="removeItem(item)"
+            class="flex-1 flex items-center justify-center gap-2 text-sm font-medium text-red-500 bg-red-50 py-2.5 rounded-xl hover:bg-red-100 transition-colors">
+            <i class="fa-solid fa-trash-can text-xs"></i>
+            Remove
+          </button>
+        </div>
+      </div>
+    </div>
+    }
+  </div>
+
+  <!-- Summary Section -->
+  <div class="w-full max-w-4xl mt-8 p-6 bg-white border border-gray-100 rounded-3xl shadow-sm mb-20">
+    <div class="flex justify-between items-center mb-6">
+      <span class="text-gray-600 font-medium">Subtotal</span>
+      <span class="text-2xl font-bold text-gray-900">₹{{ (cart$ | async)?.subtotal }}</span>
+    </div>
+    <button (click)="checkout()"
+      class="w-full bg-yellow-500 text-white py-4 rounded-2xl font-bold text-lg hover:bg-yellow-600 transition-all shadow-lg shadow-yellow-200">
+      Proceed to Checkout
+    </button>
+  </div>
+</section>
+}
