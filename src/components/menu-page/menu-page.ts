@@ -51,6 +51,10 @@ export class MenuPage implements OnInit, OnDestroy {
   hasError: WritableSignal<boolean> = signal(false);
   searchTerm: WritableSignal<string> = signal('');
 
+  selectedProductForCustomization = signal<foodInterface | null>(null);
+  selectedVariant = signal<string | null>(null);
+  selectedAddons = signal<Set<string>>(new Set());
+
   categories = signal<any[]>([]);
   selectedCategoryId = signal<string | number | null>(null);
   private restaurantId = localStorage.getItem('restaurant_id') || '101';
@@ -133,7 +137,46 @@ export class MenuPage implements OnInit, OnDestroy {
   private cartService = inject(CartService);
   private customerService = inject(CustomerService);
 
+  openCustomizationModal(product: foodInterface) {
+    this.selectedProductForCustomization.set(product);
+    if (product.variants && product.variants.length > 0) {
+      this.selectedVariant.set(product.variants[0].variantId); // Auto-select first option
+    } else {
+      this.selectedVariant.set(null);
+    }
+    this.selectedAddons.set(new Set());
+  }
+
+  closeCustomizationModal() {
+    this.selectedProductForCustomization.set(null);
+  }
+
+  toggleAddon(addonId: string) {
+    const current = new Set(this.selectedAddons());
+    if (current.has(addonId)) {
+      current.delete(addonId);
+    } else {
+      current.add(addonId);
+    }
+    this.selectedAddons.set(current);
+  }
+
+  confirmAddToCart() {
+    const product = this.selectedProductForCustomization();
+    if (!product) return;
+    this.executeAddToCart(product, this.selectedVariant() || undefined, Array.from(this.selectedAddons()));
+    this.closeCustomizationModal();
+  }
+
   addItemToCart(product: foodInterface) {
+    if ((product.variants && product.variants.length > 0) || (product.addons && product.addons.length > 0)) {
+      this.openCustomizationModal(product);
+    } else {
+      this.executeAddToCart(product);
+    }
+  }
+
+  executeAddToCart(product: foodInterface, variantId?: string, addonIds: string[] = []) {
     const sessionId = this.customerService.getSessionToken();
     console.log('Attempting to add to cart. SessionId:', sessionId, 'Product:', product.name);
 
@@ -146,10 +189,11 @@ export class MenuPage implements OnInit, OnDestroy {
     const request: AddToCartRequest = {
       sessionId: sessionId,
       restaurantId: parseInt(this.restaurantId),
+      imageUrl: product.image,
       menuItemId: product.id,
       quantity: 1,
-      addonIds: [],
-      variantId: undefined
+      addonIds: addonIds,
+      variantId: variantId
     };
 
     this.cartService.addItem(request).subscribe({

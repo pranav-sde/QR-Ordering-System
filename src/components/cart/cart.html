@@ -1,81 +1,127 @@
-@if (!(cart$ | async)?.items?.length) {
-<section
-  class="flex flex-col justify-center items-center gap-4 w-full h-screen md:mt-[100px] mt-[50px] overflow-hidden ">
-  <div class="flex flex-col container-full container-mobile justify-center items-center">
-    <p class="text-3xl text-gray-600">Cart is empty :(</p>
-  </div>
-</section>
-} @else {
-<section class="flex flex-col justify-center items-center gap-4 w-full md:mt-[100px] mt-[50px] overflow-hidden ">
-  <div class="flex flex-row w-full items-center justify-start container-full container-mobile md:pl-36">
-    <div class="flex flex-col">
-      <p class="max-w-fit p-2 w-full text-lg text-gray-900 font-bold">Your Cart</p>
-      <p class="max-w-fit p-2 w-full text-md text-gray-600">{{ (cart$ | async)?.items?.length }} items</p>
+<div class="cart-container max-w-2xl mx-auto px-4 md:px-6 pt-24 md:pt-32 pb-60">
+
+  <!-- Header Section -->
+  <div class="cart-header mb-8">
+    <div class="flex items-center justify-between">
+      <div>
+        <h1 class="cart-title giest-medium">My Cart</h1>
+        <p class="cart-subtitle">
+          {{ (cart$ | async)?.items?.length || 0 }} items · Table #{{ tableId || 'N/A' }}
+        </p>
+      </div>
+
+      @if ((cart$ | async)?.items?.length) {
+      <button (click)="loadCart()"
+        class="refresh-btn" title="Refresh Cart">
+        <span class="material-icons text-lg">refresh</span>
+      </button>
+      }
     </div>
   </div>
-  <div
-    class="flex flex-col md:flex-row md:items-center md:justify-center flex-wrap container-full container-mobile gap-4">
-    @for (item of (cart$ | async)?.items; track item.cartItemId) {
-    <div
-      class="border border-gray-100 max-w-sm w-full md:w-80 bg-white rounded-2xl overflow-hidden transition-all duration-300 hover:shadow-xl">
-      <div class="p-6 flex flex-col gap-4">
-        <div class="flex justify-between items-start">
-          <div>
-            <h3 class="text-xl font-bold text-gray-800">{{ item.name }}</h3>
+
+  @if (!(cart$ | async)?.items?.length) {
+  <!-- Empty State -->
+  <div class="empty-state">
+    <div class="empty-icon-wrap">
+      <span class="material-icons empty-icon">shopping_cart</span>
+    </div>
+    <h2 class="empty-title giest-medium">Your cart is empty</h2>
+    <p class="empty-desc">Looks like you haven't added anything yet. Explore our menu and find something delicious!</p>
+    <button routerLink="/menu" class="browse-btn">
+      <span class="material-icons text-lg">restaurant_menu</span>
+      Browse Menu
+    </button>
+  </div>
+  } @else {
+  <!-- Cart Items List -->
+  <div class="cart-items-list">
+    @for (item of (cart$ | async)?.items; track item.cartItemId; let i = $index) {
+    <div class="cart-item item-animate" [style.animation-delay]="(i * 60) + 'ms'">
+
+      <!-- Item Image -->
+      <div class="cart-item-image-wrap">
+        @if (item.imageUrl) {
+        <img [src]="item.imageUrl" [alt]="item.name" class="cart-item-image">
+        } @else {
+        <div class="cart-item-image-placeholder">
+          <span class="material-icons">restaurant</span>
+        </div>
+        }
+      </div>
+
+      <!-- Item Details -->
+      <div class="cart-item-details">
+        <div class="cart-item-top">
+          <div class="cart-item-name-wrap">
+            <h3 class="cart-item-name">{{ item.name }}</h3>
             @if (item.variant) {
-            <p class="text-xs text-gray-500 mt-1">{{ item.variant.variantName }}</p>
+            <span class="cart-item-variant">{{ item.variant.label || item.variant.variantName }}</span>
             }
           </div>
-          <p class="text-lg font-bold text-yellow-600">₹{{ item.totalPrice }}</p>
+          <button (click)="removeItem(item)" class="remove-btn" title="Remove">
+            <span class="material-icons">close</span>
+          </button>
         </div>
 
-        <div class="flex items-center justify-between">
-          <div class="flex items-center bg-gray-50 rounded-xl p-1 border border-gray-100">
-            <button (click)="updateQuantity(item, -1)"
-              class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-white hover:shadow-sm text-gray-600 transition-all">
-              <i class="fa-solid fa-minus text-[10px]"></i>
-            </button>
-            <span class="w-10 text-center text-sm font-bold text-gray-800">{{ item.quantity }}</span>
-            <button (click)="updateQuantity(item, 1)"
-              class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-white hover:shadow-sm text-gray-600 transition-all">
-              <i class="fa-solid fa-plus text-[10px]"></i>
-            </button>
-          </div>
-          <span class="text-xs text-gray-400">× ₹{{ item.unitPrice }}</span>
-        </div>
-
-
+        <!-- Addons -->
         @if (item.addons && item.addons.length > 0) {
-        <div class="flex flex-wrap gap-1">
+        <div class="cart-item-addons">
           @for (addon of item.addons; track addon.addonId) {
-          <span class="px-2 py-1 bg-gray-50 text-[10px] rounded-full text-gray-500 border border-gray-100">{{
-            addon.addonName }}</span>
+          <span class="addon-chip">+ {{ addon.name || addon.addonName }}</span>
           }
         </div>
         }
 
-        <div class="flex gap-2 pt-2">
-          <button (click)="removeItem(item)"
-            class="flex-1 flex items-center justify-center gap-2 text-sm font-medium text-red-500 bg-red-50 py-2.5 rounded-xl hover:bg-red-100 transition-colors">
-            <i class="fa-solid fa-trash-can text-xs"></i>
-            Remove
-          </button>
+        <!-- Bottom: Price + Quantity -->
+        <div class="cart-item-bottom">
+          <div class="cart-item-price">
+            <span class="price-symbol">₹</span>{{ item.totalPrice }}
+          </div>
+
+          <div class="quantity-controls">
+            <button (click)="updateQuantity(item, -1)" class="qty-btn" title="Decrease">
+              <span class="material-icons">remove</span>
+            </button>
+            <span class="qty-value">{{ item.quantity }}</span>
+            <button (click)="updateQuantity(item, 1)" class="qty-btn" title="Increase">
+              <span class="material-icons">add</span>
+            </button>
+          </div>
         </div>
       </div>
     </div>
     }
   </div>
 
-  <!-- Summary Section -->
-  <div class="w-full max-w-4xl mt-8 p-6 bg-white border border-gray-100 rounded-3xl shadow-sm mb-20">
-    <div class="flex justify-between items-center mb-6">
-      <span class="text-gray-600 font-medium">Subtotal</span>
-      <span class="text-2xl font-bold text-gray-900">₹{{ (cart$ | async)?.subtotal }}</span>
+  <!-- Sticky Summary Bar -->
+  <div class="summary-card item-animate">
+    <div class="summary-inner">
+      <div class="summary-row">
+        <span class="summary-label">Subtotal · {{ (cart$ | async)?.items?.length }} items</span>
+        <span class="summary-value">₹{{ (cart$ | async)?.subtotal }}</span>
+      </div>
+
+      <div class="summary-divider"></div>
+
+      <div class="summary-total-row">
+        <div class="summary-total">
+          <span class="total-label">Total</span>
+          <span class="total-amount">
+            <span class="total-symbol">₹</span>{{ (cart$ | async)?.subtotal }}
+          </span>
+        </div>
+
+        <button (click)="checkout()" class="checkout-btn">
+          <span>Place Order</span>
+          <span class="material-icons checkout-arrow">arrow_forward</span>
+        </button>
+      </div>
+
+      <p class="summary-note">
+        Food will be served at Table #{{ tableId || 'N/A' }}
+      </p>
     </div>
-    <button (click)="checkout()"
-      class="w-full bg-yellow-500 text-white py-4 rounded-2xl font-bold text-lg hover:bg-yellow-600 transition-all shadow-lg shadow-yellow-200">
-      Proceed to Checkout
-    </button>
   </div>
-</section>
-}
+  }
+
+</div>

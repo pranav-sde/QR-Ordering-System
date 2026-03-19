@@ -1,46 +1,59 @@
-<!-- High-End Background Effects -->
-<div class="bg-blob blob-1"></div>
-<div class="bg-blob blob-2"></div>
+<!-- Modern Mesh Background -->
+<div class="fixed inset-0 mesh-bg -z-10"></div>
 
-<div class="max-w-6xl mx-auto px-6 relative z-10">
+<div class="max-w-7xl mx-auto px-4 md:px-8 relative z-10">
   <!-- Header Section -->
-  <header class="md:mt-[100px] mt-[40px] mb-12">
-    <div class="flex flex-col gap-3 items-center md:items-start text-center md:text-left mb-8">
-      <h1 class="giest-medium text-5xl md:text-7xl title-gradient tracking-tighter leading-[1.1]">
-        Crafting <br class="md:hidden"> <span class="text-yellow-500">Delight</span>
-      </h1>
-      <p class="text-gray-400 text-sm md:text-base font-medium max-w-md">
-        Explore a curated collection of culinary masterpieces.
-      </p>
-    </div>
-
-    <!-- Search & Recommendation Row -->
-    <div class="flex flex-col md:flex-row justify-between items-center gap-6">
-      <div class="glass-searchContainer flex items-center justify-between p-1.5 w-full md:w-[45%]">
-        <input type="text" (input)="searchMenu($event)" placeholder="Search for something delicious..."
-          class="text-sm pl-4 placeholder:text-gray-400 focus:outline-hidden w-full bg-transparent border-none">
-        <button
-          class="bg-[#090A0F] text-xs font-medium text-white px-6 py-2.5 cursor-pointer rounded-full hover:bg-gray-800 transition-all active:scale-95">
-          Search
-        </button>
+  <header class="pt-24 md:pt-32 pb-12">
+    <div class="flex flex-col md:flex-row md:items-end justify-between gap-8">
+      <div class="flex flex-col gap-4">
+        <div class="inline-flex items-center gap-2 px-3 py-1 bg-yellow-400/10 text-yellow-600 rounded-full w-fit">
+          <span class="w-1.5 h-1.5 bg-yellow-400 rounded-full"></span>
+          <span class="text-[10px] font-black uppercase tracking-widest">Open Now</span>
+        </div>
+        <h1 class="text-5xl md:text-8xl font-black tracking-tight leading-[0.9] text-[#090A0F]">
+          Find your <br> <span class="title-gradient-modern">Cravings.</span>
+        </h1>
+        <p class="text-gray-500 font-medium max-w-sm mt-2 text-lg">
+          Taste the perfection in every bite with our curated chef specials.
+        </p>
       </div>
 
+      <!-- Desktop Recommendation -->
       <div class="hidden md:block">
-        <div class="glass-container flex items-center gap-2 px-4 py-2.5 rounded-full border border-white/60">
-          <span class="text-[10px] animate-pulse">✨</span>
-          <p class="text-[9px] uppercase tracking-[0.2em] text-gray-600 font-bold">Chef's Choice Recommendation</p>
+        <div
+          class="glass-effect p-6 rounded-[2rem] border border-white/50 shadow-premium max-w-xs transition-all hover:scale-[1.02] cursor-pointer group">
+          <div class="flex items-center gap-3 mb-3">
+            <span class="text-2xl group-hover:animate-bounce">✨</span>
+            <p class="text-[10px] uppercase font-black tracking-[0.2em] text-gray-400">Chef's Choice</p>
+          </div>
+          <p class="font-bold text-[#090A0F] leading-snug">The Truffle Mushroom Risotto is trending today!</p>
         </div>
+      </div>
+    </div>
+
+    <!-- Modern Search Row -->
+    <div class="mt-12">
+      <div
+        class="glass-effect flex items-center gap-4 p-2 pl-6 rounded-3xl border border-gray-100 shadow-premium w-full md:w-[60%] lg:w-[45%] focus-within:border-black transition-all">
+        <span class="material-icons text-gray-400">search</span>
+        <input type="text" (input)="searchMenu($event)" placeholder="Search for sushi, pasta..."
+          class="text-base font-semibold placeholder:text-gray-300 focus:outline-hidden w-full bg-transparent border-none">
+        <button
+          class="bg-[#090A0F] text-sm font-bold text-white px-8 py-3.5 cursor-pointer rounded-2xl hover:bg-gray-800 transition-all active:scale-95 shadow-lg shadow-black/10">
+          Find
+        </button>
       </div>
     </div>
   </header>
 
-  <!-- Category Section -->
-  <section class="w-full mb-12 overflow-x-auto whitespace-nowrap scrollbar-hide py-2">
-    <div class="flex gap-3">
+  <!-- Premium Category Navigation -->
+  <section class="w-full mb-12 sticky top-[100px] z-20 py-4">
+    <div class="flex gap-3 overflow-x-auto scrollbar-hide pb-2">
       @for (category of categories(); track category.categoryId) {
       <button (click)="selectCategory(category.categoryId)"
-        [ngClass]="selectedCategoryId() === category.categoryId ? 'category-active' : 'category-pill'"
-        class="px-6 py-2.5 rounded-full text-sm font-semibold transition-all duration-300 cursor-pointer">
+        [class.category-btn-active]="selectedCategoryId() === category.categoryId"
+        [class.category-btn]="selectedCategoryId() !== category.categoryId"
+        class="whitespace-nowrap px-8 py-3.5 rounded-2xl font-bold transition-all duration-300 cursor-pointer shadow-sm">
         {{ category.name }}
       </button>
       }
@@ -48,22 +61,109 @@
   </section>
 
   <!-- Items Grid Section -->
-  <section class="pb-24">
+  <section class="pb-32">
     @defer (when !isLoading()) {
-    <div class="grid grid-cols-2 lg:grid-cols-4 md:grid-cols-3 gap-6">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 md:grid-cols-3 gap-8">
       @for (item of filteredFoodItems(); track item.id) {
       <app-food-item [foodItem]="item" [quantity]="(cartQuantityMap$ | async)?.[item.id] || 0"
-        (handleAdd)="addItemToCart($event)" (handleRemove)="removeFromCart($event)">
+        (handleAdd)="addItemToCart($event)" (handleRemove)="removeFromCart($event)" class="block h-full">
       </app-food-item>
       }
-
     </div>
     } @placeholder {
-    <div class="grid grid-cols-2 lg:grid-cols-4 md:grid-cols-3 gap-6">
-      @for (_ of [1, 2, 3, 4, 5, 6, 7, 8]; track _) {
-      <div class="skeleton h-64"></div>
-      }
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 md:grid-cols-3 gap-8 text-center pt-20">
+      <div class="col-span-full">
+        <span class="loading loading-spinner loading-lg text-black"></span>
+        <p class="mt-4 font-bold text-gray-400">Loading your menu...</p>
+      </div>
     </div>
     }
   </section>
+
+  <!-- Customization Modal -->
+  @if (selectedProductForCustomization()) {
+  <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-md fade-in animate-duration-200">
+    <div class="bg-white rounded-[2rem] max-w-md w-full overflow-hidden shadow-2xl scale-in transform transition-all">
+      <!-- Image Header -->
+      <div class="h-48 relative w-full">
+        <img [src]="selectedProductForCustomization()?.image" class="w-full h-full object-cover">
+        <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
+        <button (click)="closeCustomizationModal()" class="absolute top-4 right-4 bg-black/50 hover:bg-black text-white rounded-full w-8 h-8 flex items-center justify-center transition-colors cursor-pointer z-10">
+          <span class="material-icons text-sm">close</span>
+        </button>
+        <div class="absolute bottom-4 left-4 right-4 text-white">
+          <h2 class="text-2xl font-black leading-tight">{{ selectedProductForCustomization()?.name }}</h2>
+          <p class="text-sm opacity-80 line-clamp-1">{{ selectedProductForCustomization()?.description }}</p>
+        </div>
+      </div>
+
+      <div class="p-6 max-h-[50vh] overflow-y-auto">
+        <!-- Variants -->
+        @if (selectedProductForCustomization()?.variants?.length) {
+        <div class="mb-6">
+          <div class="flex items-center justify-between mb-3">
+             <h3 class="text-lg font-bold text-gray-900">Choose Option</h3>
+             <span class="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded-md font-bold uppercase tracking-wider">Required</span>
+          </div>
+          <div class="space-y-3">
+            @for (variant of selectedProductForCustomization()?.variants; track variant.variantId) {
+            <label class="flex items-center justify-between p-3 rounded-xl border-2 transition-colors cursor-pointer"
+                   [class.border-black]="selectedVariant() === variant.variantId"
+                   [class.bg-gray-50]="selectedVariant() === variant.variantId"
+                   [class.border-gray-100]="selectedVariant() !== variant.variantId">
+              <div class="flex items-center gap-3">
+                <input type="radio" name="variant" [value]="variant.variantId" 
+                       (change)="selectedVariant.set(variant.variantId)"
+                       [checked]="selectedVariant() === variant.variantId"
+                       class="w-5 h-5 accent-black cursor-pointer">
+                <span class="font-bold text-gray-800">{{ variant.label }}</span>
+              </div>
+              <span class="font-semibold text-gray-900">+₹{{ variant.price }}</span>
+            </label>
+            }
+          </div>
+        </div>
+        }
+
+        <!-- Addons -->
+        @if (selectedProductForCustomization()?.addons?.length) {
+        <div>
+          <div class="flex items-center justify-between mb-3">
+             <h3 class="text-lg font-bold text-gray-900">Extras</h3>
+             <span class="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded-md font-bold uppercase tracking-wider">Optional</span>
+          </div>
+          <div class="space-y-3">
+            @for (addon of selectedProductForCustomization()?.addons; track addon.addonId) {
+            <label class="flex items-center justify-between p-3 rounded-xl border-2 transition-colors cursor-pointer"
+                   [class.border-black]="selectedAddons().has(addon.addonId)"
+                   [class.bg-gray-50]="selectedAddons().has(addon.addonId)"
+                   [class.border-gray-100]="!selectedAddons().has(addon.addonId)">
+              <div class="flex items-center gap-3">
+                <input type="checkbox" [checked]="selectedAddons().has(addon.addonId)"
+                       (change)="toggleAddon(addon.addonId)"
+                       class="w-5 h-5 accent-black rounded cursor-pointer">
+                <span class="font-bold text-gray-800">{{ addon.name }}</span>
+              </div>
+              <span class="font-semibold text-gray-900">+₹{{ addon.price }}</span>
+            </label>
+            }
+          </div>
+        </div>
+        }
+      </div>
+
+      <!-- Footer action -->
+      <div class="p-4 border-t border-gray-100 bg-gray-50">
+        <button (click)="confirmAddToCart()" 
+                [disabled]="selectedProductForCustomization()?.variants?.length && !selectedVariant()"
+                class="w-full bg-[#090A0F] text-white py-4 rounded-xl font-bold text-lg hover:bg-gray-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer flex justify-between items-center px-6">
+          <span>Add to Cart</span>
+          <span class="font-black bg-white/20 px-3 py-1 rounded-lg text-sm">
+            <span class="text-[10px] mr-1">₹</span>{{ selectedProductForCustomization()?.price }} <!-- We can just show base price or leave it simple -->
+          </span>
+        </button>
+      </div>
+    </div>
+  </div>
+  }
 </div>

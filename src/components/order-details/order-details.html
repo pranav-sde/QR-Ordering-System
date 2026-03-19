@@ -1,0 +1,94 @@
+<div class="order-details-container px-6 py-12 min-h-screen bg-slate-900 text-white font-['Outfit']">
+    @if (loading()) {
+    <div class="flex flex-col items-center justify-center p-20 glass-card animate-pulse">
+        <div class="w-16 h-16 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin mb-4"></div>
+        <p class="text-xl font-medium tracking-wide">Cooking up your order details...</p>
+    </div>
+    } @else if (error()) {
+    <div class="glass-card p-12 text-center max-w-lg mx-auto border-red-500/30">
+        <span class="material-icons text-red-400 text-6xl mb-6">error_outline</span>
+        <h2 class="text-3xl font-bold mb-4">Oops!</h2>
+        <p class="text-slate-400 mb-8">{{ error() }}</p>
+        <a routerLink="/menu" class="btn-primary w-full inline-block">Back to Menu</a>
+    </div>
+    } @else if (order()) {
+    <div class="max-w-2xl mx-auto">
+        <!-- Success Header -->
+        <div class="text-center mb-12">
+            <div class="success-icon-wrapper mb-6 animate-bounce-slow">
+                <span class="material-icons text-7xl text-emerald-400 glow-icon">check_circle</span>
+            </div>
+            <h1 class="text-4xl font-bold mb-2">Order Confirmed!</h1>
+            <p class="text-slate-400 text-lg">Your food journey has begun. Get ready!</p>
+        </div>
+
+        <!-- Quick Info Cards -->
+        <div class="grid grid-cols-2 gap-4 mb-8">
+            <div class="glass-card p-6 flex flex-col items-center justify-center">
+                <span class="text-indigo-400 text-sm font-bold uppercase tracking-wider mb-1">Order ID</span>
+                <span class="text-xl font-mono">#{{ order()?.orderId?.substring(0, 8) }}</span>
+            </div>
+            <div class="glass-card p-6 flex flex-col items-center justify-center">
+                <span class="text-indigo-400 text-sm font-bold uppercase tracking-wider mb-1">Total Paid</span>
+                <span class="text-2xl font-bold text-emerald-400">₹{{ order()?.totalAmount }}</span>
+            </div>
+        </div>
+
+        <!-- Progress Tracking Card -->
+        <div class="glass-card p-8 mb-8 border-indigo-500/20">
+            <h3 class="text-xl font-bold mb-8 flex items-center">
+                <span class="material-icons mr-2 text-indigo-400">track_changes</span>
+                Live Order Status
+            </h3>
+
+            <div class="status-timeline">
+                <div class="timeline-step" [class.active]="order()?.status === OrderStatus.PENDING">
+                    <div class="step-dot transition-all duration-500"
+                        [class.complete]="order()?.status !== OrderStatus.PENDING">
+                        @if (order()?.status !== OrderStatus.PENDING) { <span class="material-icons text-xs">done</span>
+                        }
+                    </div>
+                    <div class="step-content">
+                        <p class="font-bold">Order Received</p>
+                        <p class="text-sm text-slate-400">Waiting for kitchen acceptance</p>
+                    </div>
+                </div>
+
+                <div class="timeline-step" [class.active]="order()?.status === OrderStatus.PREPARING">
+                    <div class="step-dot transition-all duration-500"
+                        [class.complete]="[OrderStatus.READY, OrderStatus.SERVED].includes(order()!.status)">
+                        @if ([OrderStatus.READY, OrderStatus.SERVED].includes(order()!.status)) { <span
+                            class="material-icons text-xs">done</span> }
+                    </div>
+                    <div class="step-content">
+                        <p class="font-bold">Preparing</p>
+                        <p class="text-sm text-slate-400">Chefs are working their magic</p>
+                    </div>
+                </div>
+
+                <div class="timeline-step" [class.active]="order()?.status === OrderStatus.READY">
+                    <div class="step-dot transition-all duration-500"
+                        [class.complete]="order()?.status === OrderStatus.SERVED">
+                        @if (order()?.status === OrderStatus.SERVED) { <span class="material-icons text-xs">done</span>
+                        }
+                    </div>
+                    <div class="step-content">
+                        <p class="font-bold">Ready</p>
+                        <p class="text-sm text-slate-400">Hot and fresh, coming to you!</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Action Footer -->
+        <div class="flex flex-col gap-4">
+            <a routerLink="/menu"
+                class="btn-primary w-full text-center py-4 flex items-center justify-center gap-2 group">
+                <span class="material-icons group-hover:-translate-x-1 transition-transform">arrow_back</span>
+                Back to Menu
+            </a>
+            <p class="text-center text-slate-500 text-sm">Need help? Contact the restaurant staff.</p>
+        </div>
+    </div>
+    }
+</div>

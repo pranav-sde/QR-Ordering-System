@@ -1,3 +1,17 @@
+export interface Variant {
+  variantId: string;
+  label: string;
+  price: number;
+  available: boolean;
+}
+
+export interface Addon {
+  addonId: string;
+  name: string;
+  price: number;
+  available: boolean;
+}
+
 export interface foodInterface {
   id: string;
   name: string;
@@ -6,8 +20,8 @@ export interface foodInterface {
   veg: boolean;
   quantity: number;
   price: number;
-  variants?: any[];
-  addons?: any[];
+  variants?: Variant[];
+  addons?: Addon[];
   mealType?: string;
   cuisine?: string;
   rating?: number;

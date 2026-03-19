@@ -1,0 +1,73 @@
+export enum OrderStatus {
+    PENDING = 'PENDING',
+    PREPARING = 'PREPARING',
+    READY = 'READY',
+    SERVED = 'SERVED',
+    CANCELLED = 'CANCELLED'
+}
+
+export interface CheckoutResponse {
+    orderId: string;
+    status: OrderStatus;
+    totalAmount: number;
+}
+
+export interface AddonSnapshot {
+    addonId: string;
+    name?: string;
+    addonName?: string;
+    price?: number;
+}
+
+export interface VariantSnapshot {
+    variantId: string;
+    label?: string;
+    variantName?: string;
+    price?: number;
+}
+
+export interface CartItem {
+    cartItemId: string;
+    menuItemId: string;
+    imageUrl: string;
+    name: string;
+    identityKey: string;
+    variant?: VariantSnapshot;
+    addons: AddonSnapshot[];
+    unitPrice: number;
+    quantity: number;
+    totalPrice: number;
+}
+
+export interface Cart {
+    cartId: string;
+    restaurantId: number;
+    sessionId: string;
+    createdAt: number;
+    updatedAt: number;
+    items: CartItem[];
+    subtotal: number;
+}
+
+export interface AddToCartRequest {
+    sessionId: string;
+    restaurantId: number;
+    imageUrl: string;
+    menuItemId: string;
+    variantId?: string;
+    addonIds?: string[];
+    quantity: number;
+}
+
+export interface UpdateCartItemRequest {
+    restaurantId: number;
+    sessionId: string;
+    quantity: number;
+}
+
+export interface CheckoutRequest {
+    restaurantId: number;
+    sessionId: string;
+    tableNumber: number;
+    variantId?: string;
+}

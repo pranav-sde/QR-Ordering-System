@@ -2,26 +2,34 @@ import { Component, inject, OnInit, signal, WritableSignal } from '@angular/core
 import { Store } from '@ngrx/store';
 import { AppState } from '../../state/app.state';
 import { selectCart } from '../../state/cart/cart.selector';
-import { AsyncPipe } from '@angular/common';
+import { AsyncPipe, CommonModule } from '@angular/common';
 import { CartService } from '../../services/cart/cart.service';
 import { CustomerService } from '../../services/customer/customer.service';
+
 import * as CartActions from '../../state/cart/cart.actions';
+import { Router, RouterModule } from '@angular/router';
+import { first } from 'rxjs';
 
 @Component({
   selector: 'app-cart',
   standalone: true,
-  imports: [AsyncPipe],
+  imports: [AsyncPipe, CommonModule, RouterModule],
   templateUrl: './cart.html',
+  styleUrl: './cart.css'
 })
 export class Cart implements OnInit {
   private store = inject<Store<AppState>>(Store);
   private cartService = inject(CartService);
   private customerService = inject(CustomerService);
 
+  private router = inject(Router);
+
   public cart$ = this.store.select(selectCart);
   public foodItemLength: WritableSignal<any> = signal(0);
-
+  public tableId = localStorage.getItem('table_id');
   private restaurantId = localStorage.getItem('restaurant_id') || '101';
+
+
 
   ngOnInit() {
     this.loadCart();
@@ -42,6 +50,8 @@ export class Cart implements OnInit {
       });
     }
   }
+
+
 
   updateQuantity(item: any, delta: number) {
     const sessionId = this.customerService.getSessionToken();
@@ -86,19 +96,27 @@ export class Cart implements OnInit {
     }
   }
 
-
   checkout() {
     const sessionId = this.customerService.getSessionToken();
+    const tableId = localStorage.getItem('table_id');
+    const tableNumber = tableId ? parseInt(tableId) : 1;
+
     if (sessionId) {
       this.cartService.checkout({
         restaurantId: parseInt(this.restaurantId),
-        sessionId: sessionId
+        sessionId: sessionId,
+        tableNumber: tableNumber,
+        variantId: ""
       }).subscribe({
         next: (res) => {
-          alert('Order placed successfully!');
+          localStorage.setItem('last_order_id', res.orderId);
           this.store.dispatch(CartActions.loadCartSuccess({ cart: null as any }));
+          this.router.navigate(['/order', res.orderId]);
         },
-        error: (err) => console.error('Checkout failed:', err)
+        error: (err) => {
+          console.error('Checkout failed:', err);
+          alert('Failed to place order. Please try again.');
+        }
       });
     }
   }

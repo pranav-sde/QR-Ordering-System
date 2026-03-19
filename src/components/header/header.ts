@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { AppState } from '../../state/app.state';
@@ -17,5 +17,9 @@ export class Header {
   public ui = inject(UicartService);
   private store = inject<Store<AppState>>(Store);
   public cartCount$ = this.store.select(selectCartItemsCount);
+
+  public getLastOrderId() {
+    return localStorage.getItem('last_order_id');
+  }
 }
 
