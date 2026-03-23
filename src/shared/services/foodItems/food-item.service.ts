@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { map } from 'rxjs';
 import { apiFormat } from '../../../model/api.interface';
 import { foodInterface } from '../../../model/food.interface';
+import { environment } from '../../../environment/env';
 
 @Injectable({
   providedIn: 'root'
@@ -13,7 +14,7 @@ export class FoodItemService {
   constructor() {
   }
 
-  private menuApiUrl = 'http://localhost:8085/menu';
+  private menuApiUrl = `${environment.apiUrl}/menu`;
 
   getCategories(restaurantId?: string) {
     const params: any = {};
