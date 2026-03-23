@@ -15,11 +15,8 @@ export class CartService {
         return this.http.post<Cart>(`${this.cartUrl}/cart/items`, req);
     }
 
-    getCart(restaurantId: number, sessionId: string): Observable<Cart> {
-        let params = new HttpParams()
-            .set('restaurantId', restaurantId.toString())
-            .set('sessionId', sessionId);
-        return this.http.get<Cart>(`${this.cartUrl}/cart`, { params });
+    getCart(restaurantId: number, sessionId: string, tableNumber: number = 1): Observable<Cart> {
+        return this.http.get<Cart>(`${this.cartUrl}/cart`);
     }
 
     updateItemQuantity(cartItemId: string, req: UpdateCartItemRequest): Observable<Cart> {

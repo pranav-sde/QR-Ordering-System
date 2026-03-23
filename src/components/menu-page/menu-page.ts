@@ -20,7 +20,7 @@ import { addToCart } from '../../state/cart/cart.actions';
 import { Router } from '@angular/router';
 import { UicartService } from '../../shared/services/uicart/uicart.service';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { first } from 'rxjs';
+import { first, Subscription } from 'rxjs';
 import { CartService } from '../../services/cart/cart.service';
 
 import { CustomerService } from '../../services/customer/customer.service';
@@ -80,8 +80,10 @@ export class MenuPage implements OnInit, OnDestroy {
 
   loadCart() {
     const sessionId = this.customerService.getSessionToken();
+    const tableId = localStorage.getItem('table_id');
+    const tableNumber = tableId ? parseInt(tableId) : 1;
     if (sessionId) {
-      this.cartService.getCart(parseInt(this.restaurantId), sessionId).subscribe({
+      this.cartService.getCart(parseInt(this.restaurantId), sessionId, tableNumber).subscribe({
         next: (cart) => {
           this.store.dispatch(CartActions.loadCartSuccess({ cart }));
         },
@@ -103,9 +105,17 @@ export class MenuPage implements OnInit, OnDestroy {
     });
   }
 
+  private foodListSub?: Subscription;
+
   loadFoodItems(categoryId: string | number | null) {
     this.isLoading.set(true);
-    this.foodApi.getFoodItems(this.restaurantId, categoryId || undefined)
+
+    // Cancel the previous API request so they don't get mixed up!
+    if (this.foodListSub) {
+      this.foodListSub.unsubscribe();
+    }
+
+    this.foodListSub = this.foodApi.getFoodItems(this.restaurantId, categoryId || undefined)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (data) => {

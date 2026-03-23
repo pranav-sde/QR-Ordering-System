@@ -25,12 +25,8 @@ export class MyOrdersComponent implements OnInit {
 
     fetchMyOrders() {
         this.loading.set(true);
-        const restaurantIdStr = localStorage.getItem('restaurant_id') || '101';
-        const restaurantId = parseInt(restaurantIdStr);
-        const tableId = localStorage.getItem('table_id');
-        const tableNumber = tableId ? parseInt(tableId) : 3;
 
-        this.orderService.getMyOrders(restaurantId, tableNumber).subscribe({
+        this.orderService.getMyOrders().subscribe({
             next: (data) => {
                 this.orders.set(data || []);
                 this.loading.set(false);

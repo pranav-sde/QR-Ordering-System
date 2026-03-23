@@ -37,8 +37,9 @@ export class Cart implements OnInit {
 
   loadCart() {
     const sessionId = this.customerService.getSessionToken();
+    const tableNumber = this.tableId ? parseInt(this.tableId) : 1;
     if (sessionId) {
-      this.cartService.getCart(parseInt(this.restaurantId), sessionId).subscribe({
+      this.cartService.getCart(parseInt(this.restaurantId), sessionId, tableNumber).subscribe({
         next: (cart) => {
           console.log('Cart loaded successfully:', cart);
           this.store.dispatch(CartActions.loadCartSuccess({ cart }));

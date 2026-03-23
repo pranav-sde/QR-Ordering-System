@@ -14,14 +14,12 @@ export class OrderService {
     private orderUrl = environment.orderUrl;
 
     getOrder(orderId: string): Observable<CheckoutResponse> {
-        const sessionId = this.customerService.getSessionToken();
-        const headers = new HttpHeaders().set('sessionId', sessionId || '');
-        return this.http.get<CheckoutResponse>(`${this.orderUrl}/order/${orderId}`, { headers });
+        // API Gateway securely injects X-User-Id, so no manual headers needed!
+        return this.http.get<CheckoutResponse>(`${this.orderUrl}/order/${orderId}`);
     }
 
-    getMyOrders(restaurantId: number, tableNumber: number): Observable<CheckoutResponse[]> {
-        const sessionId = this.customerService.getSessionToken();
-        const headers = new HttpHeaders().set('sessionId', sessionId || '');
-        return this.http.get<CheckoutResponse[]>(`${this.orderUrl}/order/my?restaurantId=${restaurantId}&tableNumber=${tableNumber}`, { headers });
+    getMyOrders(): Observable<CheckoutResponse[]> {
+        // API Gateway securely injects X-Restaurant-Id and X-Table-No headers!
+        return this.http.get<CheckoutResponse[]>(`${this.orderUrl}/order/my`);
     }
 }
