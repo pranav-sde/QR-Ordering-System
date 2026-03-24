@@ -1,13 +1,11 @@
 {
     "version": 2,
-    "public": true,
     "buildCommand": "npm run build",
     "outputDirectory": "dist/qr-ordering-system/browser",
     "rewrites": [
         {
             "source": "/(.*)",
-            "destination": "/index.html"
+            "destination": "/"
         }
-    ],
-    "framework": "angular"
+    ]
 }
