@@ -14,12 +14,10 @@ export class OrderService {
     private orderUrl = environment.orderUrl;
 
     getOrder(orderId: string): Observable<CheckoutResponse> {
-        // API Gateway securely injects X-User-Id, so no manual headers needed!
         return this.http.get<CheckoutResponse>(`${this.orderUrl}/order/${orderId}`);
     }
 
     getMyOrders(): Observable<CheckoutResponse[]> {
-        // API Gateway securely injects X-Restaurant-Id and X-Table-No headers!
         return this.http.get<CheckoutResponse[]>(`${this.orderUrl}/order/my`);
     }
 }

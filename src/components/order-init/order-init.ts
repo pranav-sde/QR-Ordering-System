@@ -45,7 +45,7 @@ export class OrderInitComponent implements OnInit {
         ).subscribe({
             next: (res: any) => {
                 if (res && res.sessionToken) {
-                    // Success! Redirect to menu page (which calls http://localhost:8085/menu/items)
+                    // Success! Redirect to menu page (via API Gateway)
                     this.router.navigate(['/menu']);
                 }
             }

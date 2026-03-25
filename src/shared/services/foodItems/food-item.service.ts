@@ -14,7 +14,7 @@ export class FoodItemService {
   constructor() {
   }
 
-  private menuApiUrl = `${environment.apiUrl}/menu`;
+  private menuApiUrl = `${environment.menuUrl}/menu`;
 
   getCategories(restaurantId?: string) {
     const params: any = {};

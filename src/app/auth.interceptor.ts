@@ -42,12 +42,14 @@ export const authInterceptor: HttpInterceptorFn = (req: HttpRequest<unknown>, ne
 
     let headers: { [name: string]: string } = {};
 
-    // 1. Add X-Device-Id for /auth/session/start AND /menu/items
+    // 1. Add Device ID for specific endpoints if needed by backend
     if (req.url.includes('/auth/session/start') || req.url.includes('/menu/items')) {
         headers['X-Device-Id'] = deviceId;
     }
 
     // 2. Add Authorization header for everything EXCEPT session start
+    //    The Gateway will extract userId, restaurantId, tableNo from the JWT
+    //    and inject them as X-User-Id, X-Restaurant-Id, X-Table-No headers automatically
     if (token && !req.url.includes('/auth/session/start')) {
         headers['Authorization'] = `Bearer ${token}`;
     }

@@ -213,7 +213,7 @@ export class MenuPage implements OnInit, OnDestroy {
       },
       error: (err) => {
         console.error('Error adding item to cart:', err);
-        alert('Could not add item to cart. Check if the Cart Service is running on port 8086.');
+        alert('Could not add item to cart. Please try again later.');
       }
     });
   }
