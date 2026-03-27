@@ -1,6 +1,7 @@
 import { HttpHandlerFn, HttpInterceptorFn, HttpRequest } from '@angular/common/http';
 import { inject, PLATFORM_ID } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
+import { retry, timer } from 'rxjs';
 
 // Helper to get cookies
 function getCookie(name: string): string | null {
@@ -54,10 +55,24 @@ export const authInterceptor: HttpInterceptorFn = (req: HttpRequest<unknown>, ne
         headers['Authorization'] = `Bearer ${token}`;
     }
 
-    if (Object.keys(headers).length > 0) {
-        const cloned = req.clone({ setHeaders: headers });
-        return next(cloned);
-    }
+    const outgoing = Object.keys(headers).length > 0
+        ? req.clone({ setHeaders: headers })
+        : req;
 
-    return next(req);
+    // 3. Retry on 429 (Render free-tier hibernate rate-limiting)
+    //    Exponential backoff: 2s, 4s, 8s — up to 3 retries
+    return next(outgoing).pipe(
+        retry({
+            count: 3,
+            delay: (error, retryCount) => {
+                if (error.status === 429) {
+                    const delayMs = Math.pow(2, retryCount) * 1000; // 2s, 4s, 8s
+                    console.warn(`[Retry ${retryCount}/3] Server returned 429. Retrying in ${delayMs / 1000}s...`);
+                    return timer(delayMs);
+                }
+                // Don't retry non-429 errors
+                throw error;
+            }
+        })
+    );
 };
