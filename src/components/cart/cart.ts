@@ -5,8 +5,10 @@ import { selectCart } from '../../state/cart/cart.selector';
 import { CommonModule } from '@angular/common';
 import { CartService } from '../../services/cart/cart.service';
 import { CustomerService } from '../../services/customer/customer.service';
+import { PaymentService } from '../../services/payment/payment.service';
+import { PaymentStatus } from '../../model/payment.model';
 import { toSignal, takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { Subject, debounceTime, first } from 'rxjs';
+import { Subject, debounceTime, first, firstValueFrom } from 'rxjs';
 
 import * as CartActions from '../../state/cart/cart.actions';
 import { Router, RouterModule } from '@angular/router';
@@ -26,6 +28,7 @@ export class Cart implements OnInit {
   private store = inject<Store<AppState>>(Store);
   private cartService = inject(CartService);
   private customerService = inject(CustomerService);
+  private paymentService = inject(PaymentService);
   private destroyRef = inject(DestroyRef);
   private orderTrackingService = inject(OrderTrackingService);
 
@@ -33,6 +36,7 @@ export class Cart implements OnInit {
   public error = signal<string | null>(null);
   public showNameModal = signal(false);
   public userName = signal(localStorage.getItem('user_name') || '');
+  public paymentStatus = signal<PaymentStatus>('idle');
 
   private router = inject(Router);
 
@@ -217,6 +221,9 @@ export class Cart implements OnInit {
       }
 
       this.isCheckingOut.set(true);
+      this.paymentStatus.set('creating');
+      this.error.set(null);
+
       this.cartService.checkout({
         restaurantId: parseInt(this.restaurantId),
         sessionId: sessionId,
@@ -229,25 +236,35 @@ export class Cart implements OnInit {
         }))
       }).subscribe({
         next: (res) => {
-          this.isCheckingOut.set(false);
-          this.error.set(null); // Clear any previous errors
           localStorage.setItem('last_order_id', res.orderId);
           this.store.dispatch(CartActions.loadCartSuccess({ cart: null as any }));
-          
-          // Start tracking the order immediately so notifications work on other pages/in background
-          this.orderTrackingService.startTracking(res.orderId, res);
-          
-          // Navigate to the full orders list since downstream processing takes time
-          this.router.navigate(['/orders']);
+          this.isCheckingOut.set(false);
+          this.error.set(null);
+          this.router.navigate(['/payment-selection', res.orderId], {
+            state: { totalAmount: res.totalAmount, customerName: storedName }
+          });
         },
         error: (err) => {
           this.isCheckingOut.set(false);
+          this.paymentStatus.set('failed');
           console.error('Checkout failed:', err);
           const friendlyMsg = this.getFriendlyErrorMessage(err);
           this.error.set(friendlyMsg);
-          // Scroll to top to see the error
           if (typeof window !== 'undefined') window.scrollTo({ top: 0, behavior: 'smooth' });
         }
+      });
+    }
+  }
+
+  /**
+   * Retries payment for the last order that failed or was cancelled.
+   */
+  retryPayment() {
+    const lastOrderId = localStorage.getItem('last_order_id');
+    const storedName = localStorage.getItem('user_name') || '';
+    if (lastOrderId) {
+      this.router.navigate(['/payment-selection', lastOrderId], {
+        state: { totalAmount: 0, customerName: storedName }
       });
     }
   }

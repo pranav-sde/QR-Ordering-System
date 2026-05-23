@@ -20,4 +20,8 @@ export class OrderService {
     getMyOrders(): Observable<CheckoutResponse[]> {
         return this.http.get<CheckoutResponse[]>(`${this.orderUrl}/my`);
     }
+
+    selectCOD(orderId: string): Observable<void> {
+        return this.http.post<void>(`${this.orderUrl}/${orderId}/payment-method/cod`, {});
+    }
 }

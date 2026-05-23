@@ -11,10 +11,18 @@
       <div class="flex items-center gap-4">
         <div
           class="w-10 h-10 bg-red-500 text-white rounded-2xl flex items-center justify-center shadow-lg shadow-red-200">
+          @if (paymentStatus() === 'cancelled') {
+          <span class="material-icons text-xl">pause_circle</span>
+          } @else {
           <span class="material-icons text-xl">error_outline</span>
+          }
         </div>
         <div class="flex flex-col">
+          @if (paymentStatus() === 'cancelled') {
+          <span class="text-[10px] font-black uppercase tracking-widest text-amber-500 mb-0.5">Payment Cancelled</span>
+          } @else {
           <span class="text-[10px] font-black uppercase tracking-widest text-red-400 mb-0.5">Notification</span>
+          }
           <span class="font-bold text-[#090A0F] text-sm leading-tight">{{ error() }}</span>
         </div>
       </div>
@@ -23,6 +31,14 @@
         <span class="material-icons text-lg">close</span>
       </button>
     </div>
+    <!-- Retry Payment Button for cancelled/failed -->
+    @if (paymentStatus() === 'cancelled' || paymentStatus() === 'failed') {
+    <button (click)="retryPayment()"
+      class="mt-4 w-full bg-[#090A0F] text-white py-3.5 rounded-2xl font-bold text-sm flex items-center justify-center gap-2 shadow-lg shadow-black/10 hover:bg-gray-800 transition-all active:scale-95">
+      <span class="material-icons text-lg">refresh</span>
+      Retry Payment
+    </button>
+    }
   </div>
   }
 
@@ -163,7 +179,22 @@
 
         <button (click)="checkout()" [disabled]="isCheckingOut()"
           class="checkout-btn disabled:opacity-50 disabled:cursor-not-allowed">
-          @if (isCheckingOut()) {
+          @if (paymentStatus() === 'creating') {
+          <span class="flex items-center gap-2">
+            <span class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
+            Creating Order...
+          </span>
+          } @else if (paymentStatus() === 'paying') {
+          <span class="flex items-center gap-2">
+            <span class="payment-pulse-dot"></span>
+            Complete Payment...
+          </span>
+          } @else if (paymentStatus() === 'verifying') {
+          <span class="flex items-center gap-2">
+            <span class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
+            Verifying...
+          </span>
+          } @else if (isCheckingOut()) {
           <span class="flex items-center gap-2">
             <span class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
             Processing...
@@ -176,7 +207,11 @@
       </div>
 
       <p class="summary-note">
+        @if (paymentStatus() === 'paying') {
+        <span class="text-amber-500 font-bold">Complete payment in the Razorpay window</span>
+        } @else {
         Food will be served at Table #{{ tableId || 'N/A' }}
+        }
       </p>
     </div>
   </div>

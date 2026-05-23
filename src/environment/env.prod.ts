@@ -11,6 +11,7 @@ export const environment = {
   inventoryUrl: `${GATEWAY_URL}/inventory`,
   orderUrl: `${GATEWAY_URL}/order`,
   cartUrl: `${GATEWAY_URL}/cart`,
+  paymentUrl: `${GATEWAY_URL}/payment`,
   restaurantUrl: `${GATEWAY_URL}/restaurant`,
 
   // Individual endpoints that might not follow the service/endpoint pattern

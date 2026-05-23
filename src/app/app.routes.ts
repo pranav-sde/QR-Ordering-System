@@ -21,6 +21,9 @@ export const routes: Routes = [
       }, {
         path: 'order/:id',
         loadComponent: async () => import('../components/order-details/order-details').then(m => m.OrderDetailsComponent)
+      }, {
+        path: 'payment-selection/:id',
+        loadComponent: async () => import('../components/payment-selection/payment-selection').then(m => m.PaymentSelection)
       }
     ]
   },

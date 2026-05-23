@@ -455,6 +455,27 @@
     margin-top: 0.6rem;
 }
 
+/* ─── Payment Status ─── */
+.payment-pulse-dot {
+    width: 8px;
+    height: 8px;
+    background: #4ade80;
+    border-radius: 50%;
+    animation: paymentPulse 1.2s ease-in-out infinite;
+    box-shadow: 0 0 8px rgba(74, 222, 128, 0.6);
+}
+
+@keyframes paymentPulse {
+    0%, 100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+    50% {
+        opacity: 0.5;
+        transform: scale(1.4);
+    }
+}
+
 /* ─── Animations ─── */
 @keyframes slideInUp {
     from {
